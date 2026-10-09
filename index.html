@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DonorConnect — Donor Darah</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <span class="brand-logo">🩸</span>
+        <div>
+          <h1>DonorConnect</h1>
+          <p class="tagline">Hubungkan pendonor &amp; yang membutuhkan</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="btn-export" class="btn btn-outline" type="button">Export JSON</button>
+        <button id="btn-import" class="btn btn-outline" type="button">Import JSON</button>
+        <input type="file" id="import-file" accept="application/json,.json" hidden />
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- ===== Landing: pilih role ===== -->
+    <div id="view-landing" class="view view-landing">
+      <div class="landing-card">
+        <span class="landing-logo">🩸</span>
+        <h2>DonorConnect</h2>
+        <p class="landing-tagline">Hubungkan pendonor &amp; yang membutuhkan — satu langkah untuk menyelamatkan nyawa.</p>
+        <div class="landing-roles">
+          <button id="btn-role-donor" class="btn btn-role btn-role-donor" type="button">🩸 Masuk sebagai Pendonor</button>
+          <button id="btn-role-seeker" class="btn btn-role btn-role-seeker" type="button">🤝 Masuk sebagai Pencari Donor</button>
+          <button id="btn-role-admin" class="btn btn-role btn-role-admin" type="button">🛡️ Masuk sebagai Admin</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Halaman Pendonor ===== -->
+    <div id="view-donor" class="view" hidden>
+      <div class="page-bar">
+        <div>
+          <h2>Halaman Pendonor</h2>
+          <p>Daftarkan diri Anda dan temukan calon pendonor lain.</p>
+        </div>
+        <button class="btn btn-ghost" data-action="back-home" type="button">Kembali ke Halaman Awal</button>
+      </div>
+
+      <section class="stats stats-2" aria-label="Statistik Pendonor">
+        <div class="stat-card">
+          <span class="stat-icon">👥</span>
+          <div>
+            <div class="stat-value" id="stat-donors">0</div>
+            <div class="stat-label">Total Pendonor</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">✅</span>
+          <div>
+            <div class="stat-value" id="stat-verified-donors">0</div>
+            <div class="stat-label">Terverifikasi</div>
+          </div>
+        </div>
+      </section>
+
+      <div class="grid-2">
+        <!-- Daftar Pendonor -->
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Daftar Pendonor</h2>
+            <span class="badge" id="donor-count">0</span>
+          </div>
+
+          <div class="filters">
+            <div class="field">
+              <label for="filter-blood">Golongan Darah</label>
+              <select id="filter-blood">
+                <option value="">Semua</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="filter-city">Kota</label>
+              <select id="filter-city">
+                <option value="">Semua</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="table" id="donor-table">
+              <thead>
+                <tr>
+                  <th>Nama</th>
+                  <th>Gol.</th>
+                  <th>Kota</th>
+                  <th>No. HP</th>
+                  <th>Terakhir Donor</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="donor-tbody">
+                <tr><td colspan="6" class="empty">Belum ada pendonor terdaftar.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Form Pendonor -->
+        <section class="panel">
+          <div class="panel-head"><h2>Daftar Jadi Pendonor</h2></div>
+          <form id="form-donor" class="form" novalidate>
+            <div class="field">
+              <label for="donor-name">Nama Lengkap <span class="req">*</span></label>
+              <input type="text" id="donor-name" placeholder="cth. Budi Santoso" required />
+            </div>
+            <div class="form-row">
+              <div class="field">
+                <label for="donor-blood">Golongan Darah <span class="req">*</span></label>
+                <select id="donor-blood" required></select>
+              </div>
+              <div class="field">
+                <label for="donor-city">Kota <span class="req">*</span></label>
+                <select id="donor-city" required></select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="field">
+                <label for="donor-phone">No. HP <span class="req">*</span></label>
+                <input type="tel" id="donor-phone" placeholder="cth. 0812xxxxxxx" required />
+              </div>
+              <div class="field">
+                <label for="donor-last">Tanggal Terakhir Donor</label>
+                <input type="date" id="donor-last" />
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Daftarkan Saya</button>
+          </form>
+        </section>
+      </div>
+    </div>
+
+    <!-- ===== Halaman Pencari Donor ===== -->
+    <div id="view-seeker" class="view" hidden>
+      <div class="page-bar">
+        <div>
+          <h2>Halaman Pencari Donor</h2>
+          <p>Buat permintaan donor dan pantau permintaan yang masih aktif.</p>
+        </div>
+        <button class="btn btn-ghost" data-action="back-home" type="button">Kembali ke Halaman Awal</button>
+      </div>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Permintaan Donor</h2>
+          <span class="badge badge-red" id="request-count">0</span>
+        </div>
+
+        <div class="grid-2 grid-2-form">
+          <form id="form-request" class="form" novalidate>
+            <h3 class="form-subtitle">Buat Permintaan Baru</h3>
+            <div class="form-row">
+              <div class="field">
+                <label for="req-name">Nama Pasien <span class="req">*</span></label>
+                <input type="text" id="req-name" placeholder="cth. Siti Aminah" required />
+              </div>
+              <div class="field">
+                <label for="req-blood">Gol. Darah <span class="req">*</span></label>
+                <select id="req-blood" required></select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="field">
+                <label for="req-hospital">Rumah Sakit <span class="req">*</span></label>
+                <input type="text" id="req-hospital" placeholder="cth. RS Harapan Kita" required />
+              </div>
+              <div class="field">
+                <label for="req-city">Kota <span class="req">*</span></label>
+                <input type="text" id="req-city" placeholder="cth. Jakarta" required />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="field">
+                <label for="req-contact">Kontak <span class="req">*</span></label>
+                <input type="tel" id="req-contact" placeholder="cth. 0812xxxxxxx" required />
+              </div>
+              <div class="field">
+                <label for="req-urgency">Tingkat Urgensi <span class="req">*</span></label>
+                <select id="req-urgency" required>
+                  <option value="">Pilih…</option>
+                  <option value="Rendah">Rendah</option>
+                  <option value="Sedang">Sedang</option>
+                  <option value="Tinggi">Tinggi</option>
+                </select>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Buat Permintaan</button>
+          </form>
+
+          <div class="request-list-wrap">
+            <h3 class="form-subtitle">Permintaan Aktif</h3>
+            <div id="request-list" class="request-list">
+              <p class="empty">Belum ada permintaan donor.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===== Halaman Admin (hanya setelah login) ===== -->
+    <div id="view-admin" class="view view-admin" hidden>
+      <div class="admin-banner">
+        <div>
+          <h2>Panel Admin — Pengelola PMI</h2>
+          <p>Kelola seluruh pendonor &amp; permintaan, verifikasi data, dan unduh laporan.</p>
+        </div>
+        <div class="admin-banner-actions">
+          <button id="btn-export-report" class="btn btn-admin" type="button">Export Laporan JSON</button>
+          <button id="btn-logout" class="btn btn-ghost" type="button">Logout</button>
+        </div>
+      </div>
+
+      <section class="stats stats-4" aria-label="Statistik Admin">
+        <div class="stat-card stat-admin">
+          <span class="stat-icon">👥</span>
+          <div>
+            <div class="stat-value" id="admin-stat-donors">0</div>
+            <div class="stat-label">Total Pendonor</div>
+          </div>
+        </div>
+        <div class="stat-card stat-admin">
+          <span class="stat-icon">✅</span>
+          <div>
+            <div class="stat-value" id="admin-stat-verified">0</div>
+            <div class="stat-label">Terverifikasi</div>
+          </div>
+        </div>
+        <div class="stat-card stat-admin">
+          <span class="stat-icon">📝</span>
+          <div>
+            <div class="stat-value" id="admin-stat-requests">0</div>
+            <div class="stat-label">Total Request</div>
+          </div>
+        </div>
+        <div class="stat-card stat-admin">
+          <span class="stat-icon">⏰</span>
+          <div>
+            <div class="stat-value" id="admin-stat-active">0</div>
+            <div class="stat-label">Request Aktif</div>
+          </div>
+        </div>
+      </section>
+
+      <div class="grid-2">
+        <section class="panel panel-admin">
+          <div class="panel-head"><h2>Pendonor per Kota</h2></div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>Kota</th><th>Jumlah</th></tr></thead>
+              <tbody id="admin-city-tbody">
+                <tr><td colspan="2" class="empty">Belum ada data pendonor.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <section class="panel panel-admin">
+          <div class="panel-head"><h2>Pendonor per Golongan Darah</h2></div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>Gol.</th><th>Jumlah</th></tr></thead>
+              <tbody id="admin-blood-tbody"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <section class="panel panel-admin">
+        <div class="panel-head">
+          <h2>Semua Pendonor</h2>
+          <span class="badge badge-admin" id="admin-donor-count">0</span>
+        </div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Nama</th>
+                <th>Gol.</th>
+                <th>Kota</th>
+                <th>No. HP</th>
+                <th>Terakhir Donor</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="admin-donor-tbody">
+              <tr><td colspan="7" class="empty">Belum ada pendonor.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel panel-admin">
+        <div class="panel-head">
+          <h2>Semua Request</h2>
+          <span class="badge badge-admin" id="admin-request-count">0</span>
+        </div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Pasien</th>
+                <th>Gol.</th>
+                <th>Rumah Sakit</th>
+                <th>Kota</th>
+                <th>Kontak</th>
+                <th>Urgensi</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="admin-request-tbody">
+              <tr><td colspan="8" class="empty">Belum ada permintaan donor.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>DonorConnect — data tersimpan di localStorage perangkat Anda.</p>
+    </div>
+  </footer>
+
+  <!-- Modal Login Admin -->
+  <div id="login-modal" class="modal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="login-title">
+      <h3 id="login-title">Login Admin</h3>
+      <p class="modal-sub">Masukkan password pengelola (PMI).</p>
+      <div class="field">
+        <label for="admin-password">Password</label>
+        <input type="password" id="admin-password" placeholder="cth. admin123" autocomplete="current-password" />
+      </div>
+      <p id="login-error" class="login-error" hidden>Password salah, coba lagi.</p>
+      <div class="modal-actions">
+        <button id="btn-login-cancel" class="btn btn-ghost" type="button">Batal</button>
+        <button id="btn-login-submit" class="btn btn-admin" type="button">Login</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
